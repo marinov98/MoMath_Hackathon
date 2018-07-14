@@ -25,6 +25,7 @@ pb.setup = function (p) {
   /* this == pb.p5 == p */
   /* P5Behavior already calls createCanvas for us */
   // setup here...
+
   
 };
 
@@ -32,13 +33,16 @@ pb.draw = function (floor, p) {
   /* this == pb.p5 == p */
   // draw here...
   this.clear();
+
   this.rect(0, 0, this.width, this.height);
   // Title
   this.textSize(36);
+  this.stroke('black');
   this.text("The Knight's Tour", 150 , 60);
-
-  this.fill('#3BDBE9');
-  this.line(100, 100, 400, 400);
+  this.stroke('#3BDBE9');
+  this.line(150, 70, 430, 70);
+  this.image(lifeImage, 20, 530, 30, 30);
+  this.ellipse(240, 240, 80, 80);
 
   // for (let u of floor.users) {
   //   pb.drawUser(u);
