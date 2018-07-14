@@ -314,19 +314,25 @@ this.rect(428, 461, 53, 53);
 this.fill(255, 255, 255);
 this.rect(481, 461, 53, 53);
 
-// Start
-this.textSize(30);
-this.textFont('Helvetica');
-this.fill(255, 255, 255);
-this.text("START", 280, 555);
-
 // restart button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
 this.text("RESTART", 21, 141);
+
+//arrow
+this.stroke(0,0, 0)
+this.strokeWeight(2);
 this.fill(182, 255, 224);
 this.ellipse(50, 100, 50, 50);
+
+this.line(51, 105, 49, 110);
+this.line(49, 110, 54, 114);
+this.stroke(0, 0, 0);
+this.strokeWeight(3);
+this.noFill();
+this.arc(50, 100, 20, 20, Math.PI, Math.PI/2);
+
 
 // undo button
 this.textSize(14);
@@ -359,6 +365,19 @@ this.fill(255, 255, 255);
 this.text("GIVE UP", 21, 541);
 this.fill(48, 79, 70);
 this.ellipse(50, 500, 50, 50);
+
+// Start text
+this.textSize(30);
+this.textFont('Helvetica');
+this.fill(255, 255, 255);
+this.text("START", 280, 555);
+
+// start arrow
+this.stroke(255, 255, 255)
+this.strokeWeight(2)
+this.noFill()
+this.arc(200, 555, 20, 20, Math.PI, Math.PI/2);
+
 
 };
 
