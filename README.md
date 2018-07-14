@@ -1,2 +1,3 @@
-# Moma_Hackathon
-Project done during the moma hackathon
+# Momath Hackathon
+# Expressions: The Knight's Tour Challenge
+Project done during the momath hackathon
