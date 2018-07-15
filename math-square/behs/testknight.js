@@ -42,21 +42,8 @@ var instructions = ["INSTRUCTIONS:",
 "a square, it will show your options. Head over",
 "to the starting square on the bottom left",
 "corner to begin."
-
-var instructions2 = ["INSTRUCTIONS:",
-"The knight is one of the most unconventional",
-"pieces in the game of chess. It moves in an",
-"L shape, two squares horizontally and one",
-"vertically or one horizontally and two vertically.",
-"A knight’s tour is a mathematical problem in",
-"which you have to move the knight until it has",
-"traveled to every square on the board without",
-"repeating any.",
-"Can you find a solution? When you jump to",
-"a square, it will show your options. Head over",
-"to the starting square on the bottom left",
-"corner to begin."
 ];
+
 var intro = true;
 
 var board = [];
