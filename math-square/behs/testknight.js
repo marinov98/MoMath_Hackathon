@@ -29,7 +29,34 @@ var lost = false;
 var endMessage = "";
 var restartTime = false;
 var loseTexts = ["RIP", "Try Again", "It's Not Coming Home", "Back to Square 1"];
-var instructions = ["NAMA","JEFF"];
+var instructions = ["INSTRUCTIONS:",
+"The knight is one of the most unconventional",
+"pieces in the game of chess. It moves in an",
+"L shape, two squares horizontally and one",
+"vertically or one horizontally and two vertically.",
+"A knight’s tour is a mathematical problem in",
+"which you have to move the knight until it has",
+"traveled to every square on the board without",
+"repeating any.",
+"Can you find a solution? When you jump to",
+"a square, it will show your options. Head over",
+"to the starting square on the bottom left",
+"corner to begin."
+
+var instructions2 = ["INSTRUCTIONS:",
+"The knight is one of the most unconventional",
+"pieces in the game of chess. It moves in an",
+"L shape, two squares horizontally and one",
+"vertically or one horizontally and two vertically.",
+"A knight’s tour is a mathematical problem in",
+"which you have to move the knight until it has",
+"traveled to every square on the board without",
+"repeating any.",
+"Can you find a solution? When you jump to",
+"a square, it will show your options. Head over",
+"to the starting square on the bottom left",
+"corner to begin."
+];
 var intro = true;
 
 var board = [];
@@ -395,15 +422,148 @@ this.arc(150, 540, 20, 20, Math.PI/2, Math.PI);
 
   setTimeout(function(){ console.log("Use the force young knight-awan") }, 10000);
     if(intro){
+
+          this.textSize(40);
+          this.textFont('Courier New');
+          this.fill(71, 161, 44, 98);
+          this.rect(100, 100, 424, 424);
+
+          // Instructions text 1
+          this.fill(0);
+          this.text(instructions[0], 172, 152);
+
+      // Instructions text 2
+          this.textSize(20);
+          this.textFont('Helvetica');
+          this.text(instructions[1], 120, 187);
+
+      // Instructions text 3
+          this.textSize(20);
+          this.textFont('Helvetica');
+          this.text(instructions[2], 120, 212);
+
+
+        // Instructions text 4
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[3], 120, 237);
+
+        // Instructions text 5
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[4], 113, 262);
+
+        // Instructions text 6
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[5], 120, 297);
+
+        // Instructions text 7
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[6], 116, 322);
+
+        // Instructions text 8
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[7], 116, 347);
+
+        // Instructions text 9
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[8], 116, 367);
+
+        // Instructions text 10
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[9], 116, 402);
+
+        // Instructions text 11
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[10], 116, 427);
+
+        // Instructions text 12
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[11], 116, 452);
+
+        // Instructions text 13
+        this.textSize(20);
+        this.textFont('Helvetica');
+        this.text(instructions[12], 116, 477);
+
+  //
+
+
       this.textSize(40);
       this.textFont('Courier New');
-      this.fill(0,0,255);
-      this.rect(this.width/3, this.height/4, 300, 300);
-      this.fill(255);
-      this.text(instructions[0], this.width/3, this.height/3);
-      this.text(instructions[1], this.width/3, this.height/2);
-    }
 
+      // Instructions text 1
+      this.fill(255);
+      this.text(instructions[0], 170, 150);
+
+  // Instructions text 2
+      this.textSize(20);
+      this.textFont('Helvetica');
+      this.text(instructions[1], 118, 185);
+
+  // Instructions text 3
+      this.textSize(20);
+      this.textFont('Helvetica');
+      this.text(instructions[2], 118, 210);
+
+
+    // Instructions text 4
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[3], 118, 235);
+
+    // Instructions text 5
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[4], 111, 260);
+
+    // Instructions text 6
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[5], 118, 295);
+
+    // Instructions text 7
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[6], 114, 320);
+
+    // Instructions text 8
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[7], 114, 345);
+
+    // Instructions text 9
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[8], 114, 365);
+
+    // Instructions text 10
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[9], 114, 400);
+
+    // Instructions text 11
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[10], 114, 425);
+
+    // Instructions text 12
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[11], 114, 450);
+
+    // Instructions text 13
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[12], 114, 475);
+  }
 };
 
 export const behavior = {
