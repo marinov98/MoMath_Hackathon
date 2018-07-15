@@ -1,6 +1,6 @@
 /* MoMath Math Square Behavior
  *
- *        Title: P5 Example
+ *        Title: The Knight's Tour
  *  Description: Display user blobs and sensors (same as debug)
  * Scheduler ID:
  *    Framework: P5
@@ -9,332 +9,291 @@
  *       Status: works
  */
 
-import P5Behavior from 'p5beh';
+import P5Behavior from 'p5beh'
+import * as Display from 'display'
+import * as Sensor from 'sensors'
 
 const pb = new P5Behavior();
-
 // for WEBGL: pb.renderer = 'webgl';
 
-var goldenknight
+let squareSize = 53;
+let boardStart = 100;
+let boardEnd = boardStart + squareSize * 8;
+
+var inGame = false;
+var calledRedo = false;
+var calledUndo = false;
+var calledRestart = false;
+var quit = false;
+var lost = false;
+var endMessage = "";
+var restartTime = false;
+
+var loseTexts = ["RIP", "Try Again", "It's Not Coming Home", "Back to Square 1"];
+
+var board = [];
+var path = [];
+var extendos = [];
+var current;
+
+var score = 0;
+
+const Square = function(id,i,j,x,y){
+  this.id = id;
+  this.i = i;
+  this.j = j;
+  this.x = x;
+  this.y = y;
+  this.state = 0;
+};
+
+const createBoard = function(){
+  for(var i = 0; i < 8; i++){
+    board.push([]);
+    for(var j = 0; j < 8; j++){
+      board[i].push(new Square(8*i + j + 1,i, j,boardStart + squareSize * j, boardStart + squareSize * (7-i)));
+    }
+  }
+}
+
+var goldenknight;
 
 pb.preload = function (p) {
   /* this == pb.p5 == p */
   // ...
-goldenknight= this.loadImage('images/goldentrash2.png')
 }
 
 pb.setup = function (p) {
   /* this == pb.p5 == p */
   /* P5Behavior already calls createCanvas for us */
   // setup here...
-
+  createBoard();
+  goldenknight = this.loadImage('images/goldentrash2.png');
 
 };
+
+const getCoords = function(id){
+  var jCoord = current % 8;
+    if (jCoord == 0){
+      jCoord = 8;
+    }
+    var iCoord = (current - jCoord)/8;
+    jCoord -= 1;
+    return [iCoord,jCoord];
+}
+
+const getSquare = function(x,y){
+  for(var j = 0; j < 8;j++){
+    if(board[0][j].x + squareSize > x){
+      for(var i = 0; i < 8;i++){
+        if(board[i][j].y < y){
+          return board[i][j].id;
+        }
+      }
+    }
+  }
+}
+
+const getPosition = function(x,y){
+  if(x > boardEnd || y < boardStart){
+    return -1;
+  }
+  else if(y > boardEnd){
+    return 0;
+  }
+  else if(x < boardStart){
+    if(y > boardStart && y < 215){
+      return 65;
+    }
+    return 66;
+  }
+  else{
+    return getSquare(x,y);
+  }
+}
+
+const inBounds = function(i,j){
+  return i >=0 && i < 8 && j >=0 && j < 8;
+}
+
+const validMoves = function(iCoord, jCoord){
+  var possibilities = [];
+  var xMoves = [2, 1, -1, -2,-2, -1, 1, 2];
+  var yMoves = [1, 2, 2, 1,-1, -2, -2, -1];
+  var newX,newY;
+
+  for(var k = 0; k < 8; k++){
+    newX = iCoord + xMoves[k];
+    newY = jCoord + yMoves[k];
+    if(inBounds(newX, newY) && !path.includes(8 * newX + newY + 1)){
+      possibilities.push(board[newX][newY].id);
+    }
+  }
+  return possibilities;
+}
 
 pb.draw = function (floor, p) {
   /* this == pb.p5 == p */
   // draw here...
   this.clear();
+  this.fill(0);
+  this.rect(0, 0, Display.width, Display.height);
 
-this.fill(0)
-  this.rect(0, 0, this.width, this.height);
+
+  if(lost){
+    this.textSize(40);
+    this.textFont('Courier New');
+    this.fill(255);
+    this.text(endMessage, 25, this.height/2);
+    setTimeout(function(){ restartTime = true; console.log("you must stew in the failure to grow") }, 5000);
+    if(!restartTime){
+      return;
+    }
+    this.clear()
+    inGame = false;
+    board = [];
+    path = [];
+    extendos = [];
+    createBoard();
+  }
 
 
+  //var input = floor.sensors;
+
+  floor.maxUsers = 1;
 
   // shadow
   this.noStroke()
   this.fill(182, 255, 224);
-  this.rect(117, 98, 424, 424);
+  this.rect(boardStart + 5, boardStart + 8, squareSize * 8, squareSize * 8);
+  
+ // Title
+ this.stroke(232, 170, 21);
+ this.fill(232, 170, 21);
+ this.strokeWeight(1);
+ this.textSize(36);
+ this.textFont('Courier New');
+ this.text("The Golden Knight", 140, 60);
+
+ // Underthis.line
+ this.stroke(232, 253, 88);
+ this.strokeWeight(2);
+ this.line(130, 65, 520, 65);
+
+ // full board
+ this.fill(232, 235, 225);
+ this.stroke (0, 0, 0);
+ this.rect(100, 100, squareSize * 8, squareSize * 8);
+
+  // full board
+  this.fill(232, 235, 225);
+  this.stroke (0, 0, 0);
+  this.rect(100, 100, squareSize * 8, squareSize * 8);
+
+  //evaluate current position
+  current = getPosition(floor.users[0].x, floor.users[0].y);
+  if(!inGame){
+    if(floor.users[0].id != -1 && current == 1 ){
+      inGame = true;
+      path.push(1);
+    }
+  }
+  else{
+    if(current > 64){
+      switch (current) {
+        case 65:
+            calledRestart = true;
+            break;
+        case 66:
+            calledUndo = true;
+            break;
+        case 67:
+            calledRedo = true;
+            break;
+        case 68:
+            quit = true;
+            break;
+        case 69:
+           console.log("nice");
+            break;
+        default:   
+      }
+    }
+    else if(extendos.includes(current)){
+      score++;
+      path.push(current);
+      var coords = getCoords(current);
+      extendos = validMoves(coords[0],coords[1]);
+      if(extendos.length == 0){
+        lost = true;
+        endMessage = loseTexts[Math.round(this.random(loseTexts.length-1))];
+      }
+    }
+    else{
+      current = path[path.length-1];
+      var coords = getCoords(current);
+      extendos = validMoves(coords[0],coords[1]);
+    }
+  }
+
+  //BOARD DISPLAY CHANGES
+  for(var i = 0; i < 8; i ++){
+    for(var j = 0; j < 8; j ++){
+      //current spot
+      if(board[i][j].id == current){
+        this.fill(178, 235, 206);
+        this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
+        this.image(goldenknight, board[i][j].x, board[i][j].y, squareSize + 5, squareSize)
+      }
+      //possible move spot
+      else if(extendos.includes(board[i][j].id)){
+        this.fill("#8cff66"); 
+        this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
+      }
+      //path taken
+      else if(path.includes(board[i][j].id)){
+        this.fill(61, 104, 100);
+        this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
+        if(board[i][j].id == path[path.length-2]){
+          this.textSize(20);
+          this.textFont('Helvetica');
+          this.fill(255);
+          this.text(score,board[i][j].x + squareSize/3, board[i][j].y + squareSize/2);
+        }
+      }
+      //rest of squares
+      else if(i % 2 != j % 2){
+        //dark tiles
+        this.fill(100);
+        this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
+      }
+      else{
+        //light tiles
+        this.fill(255, 255, 255);
+        this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
+      }
 
-// Title
-this.stroke(232, 170, 21);
-this.fill(232, 170, 21);
-this.strokeWeight(1);
-this.textSize(36);
-this.textFont('Courier New');
-this.text("The Golden Knight", 140, 60);
+    }
+  }
 
-// Underthis.line
-this.stroke(232, 253, 88);
-this.strokeWeight(2);
-this.line(130, 65, 520, 65);
 
-// full board
-this.stroke (0, 0, 0);
-this.fill(232, 235, 225);
-
-
-// square 1
-this.fill(255, 255, 255);
-this.rect(110, 90, 53, 53);
-
-// square 2
-this.fill(232, 235, 225);
-this.rect(163, 90, 53, 53);
-
-// square 3
-this.fill(255, 255, 255);
-this.rect(216, 90, 53, 53);
-
-// square 4
-this.fill(232, 235, 225);
-this.rect(269, 90, 53, 53);
-
-// square 5
-this.fill(255, 255, 255);
-this.rect(322, 90, 53, 53);
-
-// square 6
-this.fill(232, 235, 225);
-this.rect(375, 90, 53, 53);
-
-// square 7
-this.fill(255, 255, 255);
-this.rect(428, 90, 53, 53);
-
-// square 8
-this.fill(232, 235, 225);
-this.rect(481, 90, 53, 53);
-
-// square 9
-this.fill(232, 235, 225);
-this.rect(110, 143, 53, 53);
-
-// square 10
-this.fill(255, 255, 255);
-this.rect(163, 143, 53, 53);
-
-// square 11
-this.fill(232, 235, 225);
-this.rect(216, 143, 53, 53);
-
-// square 12
-this.fill(255, 255, 255);
-this.rect(269, 143, 53, 53);
-
-// square 13
-this.fill(232, 235, 225);
-this.rect(322, 143, 53, 53);
-
-// square 14
-this.fill(255, 255, 255);
-this.rect(375, 143, 53, 53);
-
-// square 15
-this.fill(232, 235, 225);
-this.rect(428, 143, 53, 53);
-
-// square 16
-this.fill(255, 255, 255);
-this.rect(481, 143, 53, 53);
-
-// square 17
-this.fill(255, 255, 255);
-this.rect(110, 196, 53, 53);
-
-// square 18
-this.fill(232, 235, 225);
-this.rect(163, 196, 53, 53);
-
-// square 19
-this.fill(255, 255, 255);
-this.rect(216, 196, 53, 53);
-
-// square 20
-this.fill(232, 235, 225);
-this.rect(269, 196, 53, 53);
-
-// square 21
-this.fill(255, 255, 255);
-this.rect(322, 196, 53, 53);
-
-// square 22
-this.fill(232, 235, 225);
-this.rect(375, 196, 53, 53);
-
-// square 23
-this.fill(255, 255, 255);
-this.rect(428, 196, 53, 53);
-
-// square 24
-this.fill(232, 235, 225);
-this.rect(481, 196, 53, 53);
-
-// square 25
-this.fill(232, 235, 225);
-this.rect(110, 249, 53, 53);
-
-// square 26
-this.fill(255, 255, 255);
-this.rect(163, 249, 53, 53);
-
-// square 27
-this.fill(232, 235, 225);
-this.rect(216, 249, 53, 53);
-
-// square 28
-this.fill(255, 255, 255);
-this.rect(269, 249, 53, 53);
-
-// square 29
-this.fill(232, 235, 225);
-this.rect(322, 249, 53, 53);
-
-// square 30
-this.fill(255, 255, 255);
-this.rect(375, 249, 53, 53);
-
-// square 31
-this.fill(232, 235, 225);
-this.rect(428, 249, 53, 53);
-
-// square 32
-this.fill(255, 255, 255);
-this.rect(481, 249, 53, 53);
-
-// square 33
-this.fill(255, 255, 255);
-this.rect(110, 302, 53, 53);
-
-// square 34
-this.fill(232, 235, 225);
-this.rect(163, 302, 53, 53);
-
-// square 35
-this.fill(255, 255, 255);
-this.rect(216, 302, 53, 53);
-
-// square 36
-this.fill(232, 235, 225);
-this.rect(269, 302, 53, 53);
-
-// square 37
-this.fill(255, 255, 255);
-this.rect(322, 302, 53, 53);
-
-// square 38
-this.fill(232, 235, 225);
-this.rect(375, 302, 53, 53);
-
-// square 39
-this.fill(255, 255, 255);
-this.rect(428, 302, 53, 53);
-
-// square 40
-this.fill(232, 235, 225);
-this.rect(481, 302, 53, 53);
-
-// square 41
-this.fill(232, 235, 225);
-this.rect(110, 355, 53, 53);
-
-// square 42
-this.fill(255, 255, 255);
-this.rect(163, 355, 53, 53);
-
-// square 43
-this.fill(232, 235, 225);
-this.rect(216, 355, 53, 53);
-
-// square 44
-this.fill(255, 255, 255);
-this.rect(269, 355, 53, 53);
-
-// square 45
-this.fill(232, 235, 225);
-this.rect(322, 355, 53, 53);
-
-// square 46
-this.fill(255, 255, 255);
-this.rect(375, 355, 53, 53);
-
-// square 47
-this.fill(232, 235, 225);
-this.rect(428, 355, 53, 53);
-
-// square 48
-this.fill(255, 255, 255);
-this.rect(481, 355, 53, 53);
-
-// square 49
-this.fill(255, 255, 255);
-this.rect(110, 408, 53, 53);
-
-// square 50
-this.fill(232, 235, 225);
-this.rect(163, 408, 53, 53);
-
-// square 51
-this.fill(255, 255, 255);
-this.rect(216, 408, 53, 53);
-
-// square 52
-this.fill(232, 235, 225);
-this.rect(269, 408, 53, 53);
-
-// square 53
-this.fill(255, 255, 255);
-this.rect(322, 408, 53, 53);
-
-  // square 54
-this.fill(232, 235, 225);
-this.rect(375, 408, 53, 53);
-
-// square 55
-this.fill(255, 255, 255);
-this.rect(428, 408, 53, 53);
-
-// square 56
-this.fill(232, 235, 225);
-this.rect(481, 408, 53, 53);
-
- // square 57
-this.fill(178, 235, 206);
-this.rect(110, 461, 53, 53);
-
-// square 58
-this.fill(61, 104, 100);
-this.rect(163, 461, 53, 53);
-
-// square 59
-this.fill(98, 168, 161);
-this.rect(216, 461, 53, 53);
-
-// square 60
-this.fill(142, 25, 22);
-this.rect(269, 461, 53, 53);
-
-// square 61
-this.fill(232, 235, 225);
-this.rect(322, 461, 53, 53);
-
-// square 62
-this.fill(255, 255, 255);
-this.rect(375, 461, 53, 53);
-
-// square 63
-this.fill(232, 235, 225);
-this.rect(428, 461, 53, 53);
-
-// square 64
-this.fill(255, 255, 255);
-this.rect(481, 461, 53, 53);
 
 // Golden Knight
-this.image(goldenknight, 105, 457, 65, 60)
+// this.image(goldenknight, boardStart, boardEnd - squareSize, squareSize + 5, squareSize)
 
-// restart button
+// restart text
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("RESTART", 21, 191);
+this.text("RESTART", 20, 190);
 
-//arrow
+//restart button
 this.stroke(0, 0, 0)
 this.strokeWeight(2);
 this.fill(182, 255, 224);
 this.ellipse(50, 150, 50, 50);
 
+//restart arrow
 this.line(51, 155, 49, 160);
 this.line(49, 160, 54, 164);
 this.stroke(0, 0, 0);
@@ -404,7 +363,7 @@ this.line(58, 480, 50, 485);
 this.textSize(30);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("START", 280, 555);
+this.text("START", 280, boardEnd + 40);
 
 // start arrow
 
@@ -430,10 +389,13 @@ this.strokeWeight(6);
 this.noFill();
 this.arc(150, 540, 20, 20, Math.PI/2, Math.PI);
 
+  for (let user of floor.users) {
+    pb.drawUser(user);
+    // console.log(user);
+    // console.log(floor.users[0]);
+  }
 
 };
-
-
 
 export const behavior = {
   title: "Sensor Debug (P5)",
