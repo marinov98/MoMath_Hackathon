@@ -29,7 +29,20 @@ var lost = false;
 var endMessage = "";
 var restartTime = false;
 var loseTexts = ["RIP", "Try Again", "It's Not Coming Home", "Back to Square 1"];
-var instructions = ["NAMA","JEFF"];
+var instructions = ["INSTRUCTIONS:",
+"The knight is one of the most unconventional",
+"pieces in the game of chess. It moves in an",
+"L shape, two squares horizontally and one",
+"vertically or one horizontally and two vertically.",
+"A knight’s tour is a mathematical problem in",
+"which you have to move the knight until it has",
+"traveled to every square on the board without",
+"repeating any.",
+"Can you find a solution? When you jump to",
+"a square, it will show your options. Head over",
+"to the starting square on the bottom left",
+"corner to begin."
+];
 var intro = true;
 
 var board = [];
@@ -74,11 +87,11 @@ pb.setup = function (p) {
 };
 
 const getCoords = function(id){
-  var jCoord = current % 8;
+  var jCoord = id % 8;
     if (jCoord == 0){
       jCoord = 8;
     }
-    var iCoord = (current - jCoord)/8;
+    var iCoord = (id - jCoord)/8;
     jCoord -= 1;
     return [iCoord,jCoord];
 }
@@ -140,7 +153,17 @@ const restartGame = function(){
     extendos = [];
     score = 0;
     lost = false;
+    restartTime = false;
     createBoard();
+}
+
+const Timer = function(watch, log, time){
+  if(watch == "message"){
+    this.timeout = setTimeout(function(){ endMessage = ""; console.log(log) }, time);
+  }
+  else {
+    this.timeout = setTimeout(function(){ restartTime = true;; console.log(log) }, time);
+  }
 }
 
 pb.draw = function (floor, p) {
@@ -159,15 +182,36 @@ pb.draw = function (floor, p) {
   }
 
   if(lost){
+    for(var i = 0; i < path.length-1;i++){
+      var beginCoords = getCoords(path[i]);
+      var start = board[beginCoords[0]][beginCoords[1]];
+  
+      var endCoords = getCoords(path[i+1]);
+      var stop = board[endCoords[0]][endCoords[1]];
+  
+      console.log(beginCoords);
+      console.log(endCoords);
+      this.stroke(0,255,0);
+      this.strokeWeight(5);
+      this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
+    }
+
     this.textSize(40);
     this.textFont('Courier New');
     this.fill(255);
+    this.stroke(255,0,0);
+    this.strokeWeight(2);
     this.text(endMessage, 25, this.height/2);
-    setTimeout(function(){ restartTime = true; console.log("you must stew in the failure to grow") }, 5000);
+
+    var holdmessage = setInterval(function(){ endMessage = ""; console.log("learn from failure"); }, 3000);
+    var holdImage   = setInterval(function(){ restartTime = true;; console.log("see your path") }, 10000);
+
     if(!restartTime){
       return;
     }
     this.clear()
+    clearInterval(holdmessage);
+    clearInterval(holdImage);
     restartGame();
   }
 
@@ -185,7 +229,7 @@ pb.draw = function (floor, p) {
  this.textFont('Courier New');
  this.text("The Golden Knight", 140, 60);
 
- // Underthis.line
+ // Underline
  this.stroke(232, 253, 88);
  this.strokeWeight(2);
  this.line(130, 65, 520, 65);
@@ -235,8 +279,9 @@ pb.draw = function (floor, p) {
       var coords = getCoords(current);
       extendos = validMoves(coords[0],coords[1]);
       if(extendos.length == 0){
-        lost = true;
+        setTimeout(function(){ lost = true; }, 2000);
         endMessage = loseTexts[Math.round(this.random(loseTexts.length-1))];
+        console.log(endMessage);
       }
     }
     else{
@@ -286,17 +331,33 @@ pb.draw = function (floor, p) {
     }
   }
 
+  for(var i = 0; i < path.length-1;i++){
+    var beginCoords = getCoords(path[i]);
+    var start = board[beginCoords[0]][beginCoords[1]];
+
+    var endCoords = getCoords(path[i+1]);
+    var stop = board[endCoords[0]][endCoords[1]];
+
+    console.log(beginCoords);
+    console.log(endCoords);
+    this.stroke(0,255,0);
+    this.strokeWeight(5);
+
+    this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
+  }
 
 
+
+
+this.stroke(0);
+this.strokeWeight(2);
 // restart text
 this.textSize(14);
 this.textFont('Helvetica');
-this.fill(255, 255, 255);
+this.fill(255);
 this.text("RESTART", 20, 190);
 
 //restart button
-this.stroke(0, 0, 0)
-this.strokeWeight(2);
 this.fill(182, 255, 224);
 this.ellipse(50, 150, 50, 50);
 
@@ -406,12 +467,145 @@ this.arc(150, 540, 20, 20, Math.PI/2, Math.PI);
     if(intro){
       this.textSize(40);
       this.textFont('Courier New');
-      this.fill(0,0,255);
-      this.rect(this.width/3, this.height/4, 300, 300);
-      this.fill(255);
-      this.text(instructions[0], this.width/3, this.height/3);
-      this.text(instructions[1], this.width/3, this.height/2);
-    }
+      this.fill(71, 161, 44, 98);
+      this.rect(100, 100, 424, 424);
+
+      // Instructions text 1
+      this.fill(0);
+      this.text(instructions[0], 172, 152);
+
+  // Instructions text 2
+      this.textSize(20);
+      this.textFont('Helvetica');
+      this.text(instructions[1], 120, 187);
+
+  // Instructions text 3
+      this.textSize(20);
+      this.textFont('Helvetica');
+      this.text(instructions[2], 120, 212);
+
+
+    // Instructions text 4
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[3], 120, 237);
+
+    // Instructions text 5
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[4], 113, 262);
+
+    // Instructions text 6
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[5], 120, 297);
+
+    // Instructions text 7
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[6], 116, 322);
+
+    // Instructions text 8
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[7], 116, 347);
+
+    // Instructions text 9
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[8], 116, 367);
+
+    // Instructions text 10
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[9], 116, 402);
+
+    // Instructions text 11
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[10], 116, 427);
+
+    // Instructions text 12
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[11], 116, 452);
+
+    // Instructions text 13
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[12], 116, 477);
+
+//
+
+
+    this.textSize(40);
+    this.textFont('Courier New');
+
+    // Instructions text 1
+    this.fill(255);
+    this.text(instructions[0], 170, 150);
+
+// Instructions text 2
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[1], 118, 185);
+
+// Instructions text 3
+    this.textSize(20);
+    this.textFont('Helvetica');
+    this.text(instructions[2], 118, 210);
+
+
+  // Instructions text 4
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[3], 118, 235);
+
+  // Instructions text 5
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[4], 111, 260);
+
+  // Instructions text 6
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[5], 118, 295);
+
+  // Instructions text 7
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[6], 114, 320);
+
+  // Instructions text 8
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[7], 114, 345);
+
+  // Instructions text 9
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[8], 114, 365);
+
+  // Instructions text 10
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[9], 114, 400);
+
+  // Instructions text 11
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[10], 114, 425);
+
+  // Instructions text 12
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[11], 114, 450);
+
+  // Instructions text 13
+  this.textSize(20);
+  this.textFont('Helvetica');
+  this.text(instructions[12], 114, 475);
+  }
 
 };
 
