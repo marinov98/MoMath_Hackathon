@@ -183,16 +183,17 @@ pb.draw = function (floor, p) {
   }
 
   if(lost){
+    //lines
     for(var i = 0; i < path.length-1;i++){
       var beginCoords = getCoords(path[i]);
       var start = board[beginCoords[0]][beginCoords[1]];
-  
+
       var endCoords = getCoords(path[i+1]);
       var stop = board[endCoords[0]][endCoords[1]];
-  
+
       console.log(beginCoords);
       console.log(endCoords);
-      this.stroke(0,255,0);
+      this.stroke(125,254,255);
       this.strokeWeight(5);
       this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
     }
@@ -221,7 +222,7 @@ pb.draw = function (floor, p) {
   this.noStroke()
   this.fill(182, 255, 224);
   this.rect(boardStart + 5, boardStart + 8, squareSize * 8, squareSize * 8);
-  
+
  // Title
  this.stroke(232, 170, 21);
  this.fill(232, 170, 21);
@@ -271,7 +272,7 @@ pb.draw = function (floor, p) {
         case 69:
            console.log("nice");
             break;
-        default:   
+        default:
       }
     }
     else if(extendos.includes(current)){
@@ -303,7 +304,7 @@ pb.draw = function (floor, p) {
       }
       //possible move spot
       else if(extendos.includes(board[i][j].id)){
-        this.fill("#8cff66"); 
+        this.fill("#8cff66");
         this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
       }
       //path taken
@@ -332,6 +333,7 @@ pb.draw = function (floor, p) {
     }
   }
 
+  //lines
   for(var i = 0; i < path.length-1;i++){
     var beginCoords = getCoords(path[i]);
     var start = board[beginCoords[0]][beginCoords[1]];
@@ -341,7 +343,7 @@ pb.draw = function (floor, p) {
 
     console.log(beginCoords);
     console.log(endCoords);
-    this.stroke(0,255,0);
+    this.stroke(125,254,255);
     this.strokeWeight(5);
 
     this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
@@ -349,35 +351,17 @@ pb.draw = function (floor, p) {
 
 
 
-
+//LEFT BUTTONS
 this.stroke(0);
 this.strokeWeight(2);
-// restart text
-this.textSize(14);
-this.textFont('Helvetica');
-this.fill(255);
-this.text("RESTART", 20, 190);
-
-//restart button
-this.fill(182, 255, 224);
-this.ellipse(50, 150, 50, 50);
-
-//restart arrow
-this.line(51, 155, 49, 160);
-this.line(49, 160, 54, 164);
-this.stroke(0, 0, 0);
-this.strokeWeight(3);
-this.noFill();
-this.arc(50, 150, 20, 20, Math.PI, Math.PI/2);
-
 
 // undo button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("UNDO", 28, 305);
+this.text("UNDO", 28, 205);
 this.fill(141, 235, 206);
-this.ellipse(50, 265, 50, 50);
+this.ellipse(50, 165, 50, 50);
 
 // arrow
 this.stroke(0, 0, 0);
@@ -386,37 +370,38 @@ this.strokeWeight(3);
 // arrow
 this.stroke(0, 0, 0);
 this.strokeWeight(3);
-this.line(42, 261, 42, 271)
-this.line(42, 271, 61, 271)
-this.line(63, 271, 42, 271)
+this.line(42, 161, 42, 171)
+this.line(42, 171, 61, 171)
+this.line(63, 171, 42, 171)
 
-this.line(63, 271, 60, 266)
-this.line(63, 271, 60, 275)
+this.line(63, 171, 60, 166)
+this.line(63, 171, 60, 175)
 
 
 // redo button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("REDO", 28, 416);
+this.text("REDO", 28, 366);
 this.fill(111, 184, 162);
-this.ellipse(50, 375, 50, 50);
+this.ellipse(50, 325, 50, 50);
 
 // arrow
 this.stroke(0, 0, 0);
 this.strokeWeight(3);
-this.line(42, 371, 42, 381)
-this.line(42, 381, 61, 381)
-this.line(63, 381, 42, 381)
+this.line(42, 321, 42, 331)
+this.line(42, 331, 61, 331)
+this.line(63, 331, 42, 331)
 
-this.line(63, 381, 60, 376)
-this.line(63, 381, 60, 385)
+this.line(63, 331, 60, 326)
+this.line(63, 331, 60, 333)
 
 //give up button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
 this.text("GIVE UP", 22, 516);
+this.fill(0);
 this.text("(on life)", 26, 529)
 this.fill(48, 79, 70);
 this.ellipse(50, 475, 50, 50);
