@@ -74,11 +74,11 @@ pb.setup = function (p) {
 };
 
 const getCoords = function(id){
-  var jCoord = current % 8;
+  var jCoord = id % 8;
     if (jCoord == 0){
       jCoord = 8;
     }
-    var iCoord = (current - jCoord)/8;
+    var iCoord = (id - jCoord)/8;
     jCoord -= 1;
     return [iCoord,jCoord];
 }
@@ -140,7 +140,17 @@ const restartGame = function(){
     extendos = [];
     score = 0;
     lost = false;
+    restartTime = false;
     createBoard();
+}
+
+const Timer = function(watch, log, time){
+  if(watch == "message"){
+    this.timeout = setTimeout(function(){ endMessage = ""; console.log(log) }, time);
+  }
+  else {
+    this.timeout = setTimeout(function(){ restartTime = true;; console.log(log) }, time);
+  }
 }
 
 pb.draw = function (floor, p) {
@@ -159,15 +169,36 @@ pb.draw = function (floor, p) {
   }
 
   if(lost){
+    for(var i = 0; i < path.length-1;i++){
+      var beginCoords = getCoords(path[i]);
+      var start = board[beginCoords[0]][beginCoords[1]];
+  
+      var endCoords = getCoords(path[i+1]);
+      var stop = board[endCoords[0]][endCoords[1]];
+  
+      console.log(beginCoords);
+      console.log(endCoords);
+      this.stroke(0,255,0);
+      this.strokeWeight(5);
+      this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
+    }
+
     this.textSize(40);
     this.textFont('Courier New');
     this.fill(255);
+    this.stroke(255,0,0);
+    this.strokeWeight(2);
     this.text(endMessage, 25, this.height/2);
-    setTimeout(function(){ restartTime = true; console.log("you must stew in the failure to grow") }, 5000);
+
+    var holdmessage = setInterval(function(){ endMessage = ""; console.log("learn from failure"); }, 3000);
+    var holdImage   = setInterval(function(){ restartTime = true;; console.log("see your path") }, 10000);
+
     if(!restartTime){
       return;
     }
     this.clear()
+    clearInterval(holdmessage);
+    clearInterval(holdImage);
     restartGame();
   }
 
@@ -185,7 +216,7 @@ pb.draw = function (floor, p) {
  this.textFont('Courier New');
  this.text("The Golden Knight", 140, 60);
 
- // Underthis.line
+ // Underline
  this.stroke(232, 253, 88);
  this.strokeWeight(2);
  this.line(130, 65, 520, 65);
@@ -235,8 +266,9 @@ pb.draw = function (floor, p) {
       var coords = getCoords(current);
       extendos = validMoves(coords[0],coords[1]);
       if(extendos.length == 0){
-        lost = true;
+        setTimeout(function(){ lost = true; }, 2000);
         endMessage = loseTexts[Math.round(this.random(loseTexts.length-1))];
+        console.log(endMessage);
       }
     }
     else{
@@ -286,17 +318,33 @@ pb.draw = function (floor, p) {
     }
   }
 
+  for(var i = 0; i < path.length-1;i++){
+    var beginCoords = getCoords(path[i]);
+    var start = board[beginCoords[0]][beginCoords[1]];
+
+    var endCoords = getCoords(path[i+1]);
+    var stop = board[endCoords[0]][endCoords[1]];
+
+    console.log(beginCoords);
+    console.log(endCoords);
+    this.stroke(0,255,0);
+    this.strokeWeight(5);
+
+    this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
+  }
 
 
+
+
+this.stroke(0);
+this.strokeWeight(2);
 // restart text
 this.textSize(14);
 this.textFont('Helvetica');
-this.fill(255, 255, 255);
+this.fill(255);
 this.text("RESTART", 20, 190);
 
 //restart button
-this.stroke(0, 0, 0)
-this.strokeWeight(2);
 this.fill(182, 255, 224);
 this.ellipse(50, 150, 50, 50);
 

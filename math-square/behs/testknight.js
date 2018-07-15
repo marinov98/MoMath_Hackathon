@@ -134,7 +134,7 @@ const validMoves = function(iCoord, jCoord){
 }
 
 const restartGame = function(){
-  inGame = false;
+    inGame = false;
     board = [];
     path = [];
     extendos = [];
@@ -284,6 +284,9 @@ pb.draw = function (floor, p) {
 
     }
   }
+
+
+
 
 
 
