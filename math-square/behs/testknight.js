@@ -21,7 +21,6 @@ let boardStart = 100;
 let boardEnd = boardStart + squareSize * 8;
 
 var inGame = false;
-var calledRedo = false;
 var calledUndo = false;
 var calledRestart = false;
 var quit = false;
@@ -84,7 +83,7 @@ pb.setup = function (p) {
   // setup here...
   createBoard();
   goldenknight = this.loadImage('images/goldentrash2.png');
-
+  var time = 0;
 };
 
 const getCoords = function(id){
@@ -117,10 +116,16 @@ const getPosition = function(x,y){
     return 0;
   }
   else if(x < boardStart){
-    if(y > boardStart && y < 215){
+    if(y > boardStart && y < 230){
       return 65;
     }
-    return 66;
+    else if(y > boardStart && y < 375){
+      return 66;
+    }
+    else if(y > boardStart && y < 530){
+      return 67;
+    }
+
   }
   else{
     return getSquare(x,y);
@@ -148,7 +153,7 @@ const validMoves = function(iCoord, jCoord){
 }
 
 const restartGame = function(){
-  inGame = false;
+    inGame = false;
     board = [];
     path = [];
     extendos = [];
@@ -158,14 +163,8 @@ const restartGame = function(){
     createBoard();
 }
 
-const Timer = function(watch, log, time){
-  if(watch == "message"){
-    this.timeout = setTimeout(function(){ endMessage = ""; console.log(log) }, time);
-  }
-  else {
-    this.timeout = setTimeout(function(){ restartTime = true;; console.log(log) }, time);
-  }
-}
+var holdmessage;
+var holdImage;
 
 pb.draw = function (floor, p) {
   /* this == pb.p5 == p */
@@ -184,6 +183,8 @@ pb.draw = function (floor, p) {
 
   if(lost){
     //lines
+    time++;
+    //console.log(time);
     for(var i = 0; i < path.length-1;i++){
       var beginCoords = getCoords(path[i]);
       var start = board[beginCoords[0]][beginCoords[1]];
@@ -191,8 +192,6 @@ pb.draw = function (floor, p) {
       var endCoords = getCoords(path[i+1]);
       var stop = board[endCoords[0]][endCoords[1]];
 
-      console.log(beginCoords);
-      console.log(endCoords);
       this.stroke(125,254,255);
       this.strokeWeight(5);
       this.line(start.x + squareSize/2, start.y + squareSize/2, stop.x + squareSize/2, stop.y + squareSize/2)
@@ -204,17 +203,19 @@ pb.draw = function (floor, p) {
     this.stroke(255,0,0);
     this.strokeWeight(2);
     this.text(endMessage, 25, this.height/2);
-
-    var holdmessage = setInterval(function(){ endMessage = ""; console.log("learn from failure"); }, 3000);
-    var holdImage   = setInterval(function(){ restartTime = true;; console.log("see your path") }, 10000);
-
+  
+    if(time >= 150){
+      endMessage = "";
+    }
+    if(time >= 350){
+      restartTime = true;
+    }
     if(!restartTime){
       return;
     }
     this.clear()
-    clearInterval(holdmessage);
-    clearInterval(holdImage);
     restartGame();
+    time = 0;
   }
 
 
@@ -261,13 +262,19 @@ pb.draw = function (floor, p) {
             restartGame();
             break;
         case 66:
-            calledUndo = true;
+            time++;
+            if(!calledUndo){
+              path.pop();
+              calledUndo = true;
+            }
+            current = path[path.length-1];
+            var coords = getCoords(current);
+            extendos = validMoves(coords[0],coords[1]);
             break;
         case 67:
-            calledRedo = true;
-            break;
-        case 68:
             quit = true;
+            setTimeout(function(){ lost = true; }, 1000);
+            endMessage = loseTexts[Math.round(this.random(loseTexts.length-1))];
             break;
         case 69:
            console.log("nice");
@@ -334,15 +341,13 @@ pb.draw = function (floor, p) {
   }
 
   //lines
-  for(var i = 0; i < path.length-1;i++){
+  for(var i = 0; i < path.length-2;i++){
     var beginCoords = getCoords(path[i]);
     var start = board[beginCoords[0]][beginCoords[1]];
 
     var endCoords = getCoords(path[i+1]);
     var stop = board[endCoords[0]][endCoords[1]];
 
-    console.log(beginCoords);
-    console.log(endCoords);
     this.stroke(125,254,255);
     this.strokeWeight(5);
 
@@ -355,11 +360,11 @@ pb.draw = function (floor, p) {
 this.stroke(0);
 this.strokeWeight(2);
 
-// undo button
+// restart button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("UNDO", 28, 205);
+this.text("RESTART", 20, 205);
 this.fill(141, 235, 206);
 this.ellipse(50, 165, 50, 50);
 
@@ -378,11 +383,11 @@ this.line(63, 171, 60, 166)
 this.line(63, 171, 60, 175)
 
 
-// redo button
+// undo button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("REDO", 28, 366);
+this.text("UNDO", 28, 366);
 this.fill(111, 184, 162);
 this.ellipse(50, 325, 50, 50);
 
