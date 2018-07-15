@@ -175,8 +175,8 @@ pb.draw = function (floor, p) {
   // shadow
   this.noStroke()
   this.fill(182, 255, 224);
-  this.rect(boardStart + 5, boardStart + 8, squareSize * 8, squareSize * 8);
-  
+  this.rect(boardStart + 5, boardStart + 8, squareSize * 8 -1, squareSize * 8-4);
+
  // Title
  this.stroke(232, 170, 21);
  this.fill(232, 170, 21);
@@ -218,15 +218,14 @@ pb.draw = function (floor, p) {
             calledUndo = true;
             break;
         case 67:
-            calledRedo = true;
+            quit = true;
+            lost = true;
+            endMessage = loseTexts[Math.round(this.random(loseTexts.length-1))];
             break;
         case 68:
-            quit = true;
-            break;
-        case 69:
            console.log("nice");
             break;
-        default:   
+        default:
       }
     }
     else if(extendos.includes(current)){
@@ -257,7 +256,7 @@ pb.draw = function (floor, p) {
       }
       //possible move spot
       else if(extendos.includes(board[i][j].id)){
-        this.fill("#8cff66"); 
+        this.fill("#8cff66");
         this.rect(board[i][j].x,board[i][j].y,squareSize, squareSize);
       }
       //path taken
@@ -313,9 +312,9 @@ this.arc(50, 150, 20, 20, Math.PI, Math.PI/2);
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
-this.text("UNDO", 28, 305);
-this.fill(141, 235, 206);
-this.ellipse(50, 265, 50, 50);
+this.text("UNDO", 28, 355);
+this.fill(96, 171, 144);
+this.ellipse(50, 315, 50, 50);
 
 // arrow
 this.stroke(0, 0, 0);
@@ -324,37 +323,29 @@ this.strokeWeight(3);
 // arrow
 this.stroke(0, 0, 0);
 this.strokeWeight(3);
-this.line(42, 261, 42, 271)
-this.line(42, 271, 61, 271)
-this.line(63, 271, 42, 271)
+this.line(42, 311, 42, 321);
+this.line(42, 321, 61, 321);
+this.line(63, 321, 42, 321);
 
-this.line(63, 271, 60, 266)
-this.line(63, 271, 60, 275)
-
-
-// redo button
-this.textSize(14);
-this.textFont('Helvetica');
-this.fill(255, 255, 255);
-this.text("REDO", 28, 416);
-this.fill(111, 184, 162);
-this.ellipse(50, 375, 50, 50);
+this.line(63, 321, 60, 316);
+this.line(63, 321, 60, 325);
 
 // arrow
 this.stroke(0, 0, 0);
 this.strokeWeight(3);
-this.line(42, 371, 42, 381)
-this.line(42, 381, 61, 381)
-this.line(63, 381, 42, 381)
+this.line(42, 421, 42, 431);
+this.line(42, 431, 61, 431);
+this.line(63, 431, 42, 431);
 
-this.line(63, 381, 60, 376)
-this.line(63, 381, 60, 385)
+this.line(63, 431, 60, 426);
+this.line(63, 431, 60, 435);
 
 //give up button
 this.textSize(14);
 this.textFont('Helvetica');
 this.fill(255, 255, 255);
 this.text("GIVE UP", 22, 516);
+this.fill(0);
 this.text("(on life)", 26, 529)
 this.fill(48, 79, 70);
 this.ellipse(50, 475, 50, 50);
