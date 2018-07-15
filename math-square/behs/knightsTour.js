@@ -28,8 +28,9 @@ var quit = false;
 var lost = false;
 var endMessage = "";
 var restartTime = false;
-
 var loseTexts = ["RIP", "Try Again", "It's Not Coming Home", "Back to Square 1"];
+var instructions = ["NAMA","JEFF"];
+var intro = true;
 
 var board = [];
 var path = [];
@@ -132,6 +133,16 @@ const validMoves = function(iCoord, jCoord){
   return possibilities;
 }
 
+const restartGame = function(){
+  inGame = false;
+    board = [];
+    path = [];
+    extendos = [];
+    score = 0;
+    lost = false;
+    createBoard();
+}
+
 pb.draw = function (floor, p) {
   /* this == pb.p5 == p */
   // draw here...
@@ -139,6 +150,13 @@ pb.draw = function (floor, p) {
   this.fill(0);
   this.rect(0, 0, Display.width, Display.height);
 
+  //var input = floor.sensors;
+
+  floor.maxUsers = 1;
+
+  if(inGame){
+    intro = false;
+  }
 
   if(lost){
     this.textSize(40);
@@ -150,17 +168,9 @@ pb.draw = function (floor, p) {
       return;
     }
     this.clear()
-    inGame = false;
-    board = [];
-    path = [];
-    extendos = [];
-    createBoard();
+    restartGame();
   }
 
-
-  //var input = floor.sensors;
-
-  floor.maxUsers = 1;
 
   // shadow
   this.noStroke()
@@ -189,7 +199,6 @@ pb.draw = function (floor, p) {
   this.fill(232, 235, 225);
   this.stroke (0, 0, 0);
   this.rect(100, 100, squareSize * 8, squareSize * 8);
-
   //evaluate current position
   current = getPosition(floor.users[0].x, floor.users[0].y);
   if(!inGame){
@@ -203,6 +212,7 @@ pb.draw = function (floor, p) {
       switch (current) {
         case 65:
             calledRestart = true;
+            restartGame();
             break;
         case 66:
             calledUndo = true;
@@ -277,9 +287,6 @@ pb.draw = function (floor, p) {
   }
 
 
-
-// Golden Knight
-// this.image(goldenknight, boardStart, boardEnd - squareSize, squareSize + 5, squareSize)
 
 // restart text
 this.textSize(14);
@@ -394,6 +401,17 @@ this.arc(150, 540, 20, 20, Math.PI/2, Math.PI);
     // console.log(user);
     // console.log(floor.users[0]);
   }
+
+  setTimeout(function(){ console.log("Use the force young knight-awan") }, 10000);
+    if(intro){
+      this.textSize(40);
+      this.textFont('Courier New');
+      this.fill(0,0,255);
+      this.rect(this.width/3, this.height/4, 300, 300);
+      this.fill(255);
+      this.text(instructions[0], this.width/3, this.height/3);
+      this.text(instructions[1], this.width/3, this.height/2);
+    }
 
 };
 
